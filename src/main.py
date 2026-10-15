@@ -3,65 +3,42 @@ import json
 from groq import Groq
 from dotenv import load_dotenv
 
+from tools import add_numbers, multiply_numbers
+from tool_schema import tool_to_schema
+
 # Load environment variables from .env file
 load_dotenv()
 
-# Initialize the Groq client
+# 1. Initialize the Groq client
 client = Groq(api_key=os.environ["GROQ_API_KEY"])
 
 MODEL = "openai/gpt-oss-120b"
 
-# create python tools
-def add_numbers(a, b):
-    return a + b
-
-def multiply_numbers(a, b):
-    return a * b
+# 2. Create python tools
 
 
-# define the tool schema / Tell the LLM which tools are available
+
+# 3. define the tool schema / Tell the LLM which tools are available
 tools = [
-    {
-        "type": "function",
-        "function": {
-            "name": "add_numbers",
-            "description": "Add two numbers.",
-            "parameters": {
-                "type": "object",
-                "properties": {
-                    "a": {"type": "number"},
-                    "b": {"type": "number"}
-                },
-                "required": ["a", "b"]
-            }
-        }
-    },
-    {
-        "type": "function",
-        "function": {
-            "name": "multiply_numbers",
-            "description": "Multiply two numbers.",
-            "parameters": {
-                "type": "object",
-                "properties": {
-                    "a": {"type": "number"},
-                    "b": {"type": "number"}
-                },
-                "required": ["a", "b"]
-            }
-        }
-    }
+    tool_to_schema(add_numbers),
+    tool_to_schema(multiply_numbers)
 ]
 
 
-# Connect tools names with python functions
+
+from pprint import pprint
+
+pprint(tools, sort_dicts=False)
+
+
+# 4. Connect tools names with python functions
 available_tools = {
     "add_numbers": add_numbers,
     "multiply_numbers": multiply_numbers
 }
 
 
-# 4. Build the agent and its feedback loop
+# 5. Build the agent and its feedback loop
 def run_agent(user_input):
     messages = [
         {
