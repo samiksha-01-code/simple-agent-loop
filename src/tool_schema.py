@@ -20,11 +20,9 @@ def tool_to_schema(tool_func):
     }
 
     for name, parameter in signature.parameters.items():
-        print("name: ", name)
-        print(f"parameter: {parameter}")
         python_type = parameter.annotation
 
-        print("annotation:", repr(python_type))
+        # print("annotation:", repr(python_type))
         
         if python_type not in type_mapping:
             raise TypeError(
